@@ -1,0 +1,221 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cyberpunk Image Gallery</title>
+    <style>
+        body {
+            background-color: #000;
+            color: #0f0;
+            font-family: 'Courier New', monospace;
+            margin: 0;
+            padding: 20px;
+            text-align: center;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        h1 {
+            color: #ff00ff;
+            text-shadow: 0 0 10px #ff00ff;
+            font-size: 2.5em;
+            margin-bottom: 30px;
+        }
+
+        .gallery {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            margin: 20px 0;
+        }
+
+        .gallery-container {
+            position: relative;
+            width: 800px;
+            height: 600px;
+            border: 2px solid #0f0;
+            box-shadow: 0 0 20px #0f0;
+            overflow: hidden;
+        }
+
+        .image-container {
+            position: relative;
+            width: 100%;
+            height: 100%;
+        }
+
+        .gallery-image {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            transition: opacity 0.5s ease-in-out;
+        }
+
+        .image-description {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background: rgba(0, 0, 0, 0.8);
+            color: #0f0;
+            padding: 10px;
+            transform: translateY(100%);
+            transition: transform 0.3s ease-in-out;
+        }
+
+        .image-container:hover .image-description {
+            transform: translateY(0);
+        }
+
+        .nav-button {
+            background: #000;
+            color: #0f0;
+            border: 1px solid #0f0;
+            padding: 10px 20px;
+            margin: 0 10px;
+            cursor: pointer;
+            font-family: 'Courier New', monospace;
+            transition: all 0.3s ease;
+        }
+
+        .nav-button:hover {
+            background: #0f0;
+            color: #000;
+            box-shadow: 0 0 10px #0f0;
+        }
+
+        .loading {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            color: #0f0;
+            font-size: 1.2em;
+        }
+
+        .glitch-effect {
+            animation: glitch 1s infinite;
+        }
+
+        @keyframes glitch {
+            0% {
+                text-shadow: 2px 2px #ff00ff, -2px -2px #0f0;
+            }
+            25% {
+                text-shadow: -2px 2px #ff00ff, 2px -2px #0f0;
+            }
+            50% {
+                text-shadow: 2px -2px #ff00ff, -2px 2px #0f0;
+            }
+            75% {
+                text-shadow: -2px -2px #ff00ff, 2px 2px #0f0;
+            }
+            100% {
+                text-shadow: 2px 2px #ff00ff, -2px -2px #0f0;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1 class="glitch-effect">CYBERPUNK GALLERY</h1>
+        <div class="gallery">
+            <button class="nav-button" id="prevBtn">PREV</button>
+            <div class="gallery-container">
+                <div class="image-container">
+                    <img src="" alt="Cyberpunk Image" class="gallery-image" id="currentImage">
+                    <div class="image-description" id="imageDescription"></div>
+                </div>
+            </div>
+            <button class="nav-button" id="nextBtn">NEXT</button>
+        </div>
+    </div>
+
+    <script>
+        const images = [
+            {
+                url: 'https://images.unsplash.com/photo-1515630278258-407f66498911?w=800&h=600&fit=crop',
+                description: 'Neon-lit city streets at night, reflecting the essence of cyberpunk culture.'
+            },
+            {
+                url: 'https://images.unsplash.com/photo-1515630278258-407f66498911?w=800&h=600&fit=crop',
+                description: 'A futuristic metropolis with towering skyscrapers and flying vehicles.'
+            },
+            {
+                url: 'https://images.unsplash.com/photo-1515630278258-407f66498911?w=800&h=600&fit=crop',
+                description: 'Cyber-enhanced humans walking through a rain-soaked street market.'
+            },
+            {
+                url: 'https://images.unsplash.com/photo-1515630278258-407f66498911?w=800&h=600&fit=crop',
+                description: 'Holographic advertisements floating in the polluted air of a dystopian future.'
+            },
+            {
+                url: 'https://images.unsplash.com/photo-1515630278258-407f66498911?w=800&h=600&fit=crop',
+                description: 'A lone hacker in a dimly lit room surrounded by glowing screens.'
+            },
+            {
+                url: 'https://images.unsplash.com/photo-1515630278258-407f66498911?w=800&h=600&fit=crop',
+                description: 'Neon signs illuminating the dark alleyways of a cyberpunk city.'
+            },
+            {
+                url: 'https://images.unsplash.com/photo-1515630278258-407f66498911?w=800&h=600&fit=crop',
+                description: 'A cyberpunk street vendor selling illegal tech in the shadows.'
+            },
+            {
+                url: 'https://images.unsplash.com/photo-1515630278258-407f66498911?w=800&h=600&fit=crop',
+                description: 'Futuristic vehicles zooming through a neon-drenched cityscape.'
+            },
+            {
+                url: 'https://images.unsplash.com/photo-1515630278258-407f66498911?w=800&h=600&fit=crop',
+                description: 'A cyberpunk bar filled with augmented reality patrons.'
+            },
+            {
+                url: 'https://images.unsplash.com/photo-1515630278258-407f66498911?w=800&h=600&fit=crop',
+                description: 'A massive holographic billboard dominating the night sky.'
+            }
+        ];
+
+        let currentIndex = 0;
+        const currentImage = document.getElementById('currentImage');
+        const imageDescription = document.getElementById('imageDescription');
+        const prevBtn = document.getElementById('prevBtn');
+        const nextBtn = document.getElementById('nextBtn');
+
+        function updateImage() {
+            currentImage.style.opacity = '0';
+            setTimeout(() => {
+                currentImage.src = images[currentIndex].url;
+                imageDescription.textContent = images[currentIndex].description;
+                currentImage.style.opacity = '1';
+            }, 500);
+        }
+
+        function nextImage() {
+            currentIndex = (currentIndex + 1) % images.length;
+            updateImage();
+        }
+
+        function prevImage() {
+            currentIndex = (currentIndex - 1 + images.length) % images.length;
+            updateImage();
+        }
+
+        // Event listeners
+        nextBtn.addEventListener('click', nextImage);
+        prevBtn.addEventListener('click', prevImage);
+
+        // Keyboard navigation
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'ArrowRight') nextImage();
+            if (e.key === 'ArrowLeft') prevImage();
+        });
+
+        // Initialize first image
+        updateImage();
+    </script>
+</body>
+</html> 
